@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+.desc{
+	border:1px solid gray;
+	padding:30px;
+	margin:20px;
+	border-radius:30px;
+}
