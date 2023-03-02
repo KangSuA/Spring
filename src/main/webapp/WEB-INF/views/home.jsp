@@ -1,13 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
-<html>
-<head>
-	<title>Home</title>
-	<link rel="stylesheet" href="inc/style.css" type="text/css"/>
-	<script src="inc/script.js"></script>
-</head>
-<body>
+<div class="container">
 	<h1>
 		Hello world!  
 	</h1>
@@ -16,8 +9,9 @@
 		css외부파일 style.css<br/>
 		이미지파일 
 	</div>
+	<div>
+		번호 : ${num }<br/>
+		이름 : ${name }<br/>
+	</div>
 	<img src="img/ponyo004.jpg" onclick="test()"/>
-
-
-</body>
-</html>
+</div>
