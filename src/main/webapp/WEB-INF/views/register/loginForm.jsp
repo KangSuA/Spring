@@ -14,4 +14,9 @@
 			<li><input type="submit" value="LOGIN"/></li>
 		</ul>
 	</form>
+	<div style="background:gray; margin:50px; padding:50px; text-align:center;">
+		<a href="join">회원가입</a>
+		<a href="idSearch">아이디찾기</a>
+		<a href="pwdSearch">비밀번호찾기</a>
+	</div>
 </div>

@@ -77,6 +77,32 @@
 				alert("이름은 2~10글자까지 한글만 가능합니다.");
 				return false;
 			}
+			//전화번호
+			var tel = $("#tel1").val()+"-"+$("#tel2").val()+"-"+$("#tel3").val();
+			reg = /^(010|02|301|041|051)-[0-9]{3,4}-[0-9]{4}$/
+			if(!reg.test(tel)){
+				alert("전화번호를 잘못입력하였습니다.");
+				return false;
+			}
+			//이메일
+			//아이디 6~15글자, @, aaa.co.kr, aaa.com, aaa.net, aaa.go.kr
+			reg = /^\w{6,15}@[a-zA-Z]{2,8}.[a-z]{2,5}(.[a-z]{2,5})?$/
+			if(!reg.test($("#email").val())){
+				alert("이메일을 잘못입력하였습니다.");
+				return false;
+			}
+			//취미 2개이상 반드시 선택
+			var hobbyCount=0;
+			$("input[name=hobbyArr]").each(function(){
+				if(this.checked==true) hobbyCount++;
+			});
+			if(hobbyCount<2){
+				alert("취미는 2개이상 선택하여야 합니다.");
+				return false;
+			}
+			//form태그의 action속성 설정
+			$("#joinForm").attr("action","joinOk");
+			return true;
 		});
 	});
 </script>
@@ -86,7 +112,7 @@
 		<ul>
 			<li>아이디</li>
 			<li>
-				<input type="text" name="userid" id="userid" minlength="8" maxlength="15"/>
+				<input type="text" name="userid" id="userid" minlength="8" maxlength="15" value="test1234"/>
 				<input type="button" value="아이디중복검사"/>
 				<input type="hidden" id="idStatus" value="N"/>
 			</li>
@@ -105,11 +131,11 @@
 					<option value="041">041</option>
 					<option value="051">051</option>
 				</select> -
-				<input type="text" name="tel2" id="tel2" maxlength="4"/> -
-				<input type="text" name="tel3" id="tel3" maslength="4"/>
+				<input type="text" name="tel2" id="tel2" maxlength="4" value="1234"	/> -
+				<input type="text" name="tel3" id="tel3" maslength="4" value="5678"/>
 			</li>
 			<li>이메일</li>
-			<li><input type="text" name="email" id="email"/></li>
+			<li><input type="text" name="email" id="email" value="test1234@naver.com"/></li>
 			<li>우편번호</li>
 			<li>
 				<input type="text" name="zipcode" id="zipcode"/>
@@ -118,15 +144,15 @@
 			<li>주소</li>
 			<li><input type="text" name="addr" id="addr"/></li>
 			<li>상세주소</li>
-			<li><input type="text" name="detailaddr" id="detailaddr"/></li>
+			<li><input type="text" name="addrdetail" id="addrdetail"/></li>
 			<li>취미</li>
 			<li>
-				<input type="checkbox" name="hobby" value="야구"/>야구
-				<input type="checkbox" name="hobby" value="축구"/>축구
-				<input type="checkbox" name="hobby" value="농구"/>농구
-				<input type="checkbox" name="hobby" value="족구"/>족구
-				<input type="checkbox" name="hobby" value="피구"/>피구
-				<input type="checkbox" name="hobby" value="배구"/>배구
+				<input type="checkbox" name="hobbyArr" value="야구"/>야구
+				<input type="checkbox" name="hobbyArr" value="축구"/>축구
+				<input type="checkbox" name="hobbyArr" value="농구"/>농구
+				<input type="checkbox" name="hobbyArr" value="족구"/>족구
+				<input type="checkbox" name="hobbyArr" value="피구"/>피구
+				<input type="checkbox" name="hobbyArr" value="배구"/>배구
 			</li>
 			<li> <input type="submit" value="회원가입"/></li>
 		</ul>

@@ -1,22 +1,30 @@
 package com.multi.campus.dto;
 
+import java.util.Arrays;
+
 public class RegisterDTO {
 	private String userid;
 	private String userpwd;
 	private String username;
+	
 	private String tel;
+	private String tel1;
+	private String tel2;
+	private String tel3;
+	
 	private String email;
 	private String zipcode;
 	private String addr;
 	private String addrdetail;
 	private String hobby;
+	private String hobbyArr[];
 	private String writedate;
-	
 	@Override
 	public String toString() {
 		return "RegisterDTO [userid=" + userid + ", userpwd=" + userpwd + ", username=" + username + ", tel=" + tel
-				+ ", email=" + email + ", zipcode=" + zipcode + ", addr=" + addr + ", addrdetail=" + addrdetail
-				+ ", hobby=" + hobby + ", writedate=" + writedate + "]";
+				+ ", tel1=" + tel1 + ", tel2=" + tel2 + ", tel3=" + tel3 + ", email=" + email + ", zipcode=" + zipcode
+				+ ", addr=" + addr + ", addrdetail=" + addrdetail + ", hobby=" + hobby + ", hobbyArr="
+				+ Arrays.toString(hobbyArr) + ", writedate=" + writedate + "]";
 	}
 	public String getUserid() {
 		return userid;
@@ -37,10 +45,34 @@ public class RegisterDTO {
 		this.username = username;
 	}
 	public String getTel() {
+		tel = tel1+"-"+tel2+"-"+tel3;
 		return tel;
 	}
 	public void setTel(String tel) {
 		this.tel = tel;
+		//전화번호를  -기준으로 split한다음 tel1, tel2, tel3에 대입.
+		String telCut[] = tel.split("-");
+		tel1 = telCut[0];
+		tel2 = telCut[1];
+		tel3 = telCut[2];
+	}
+	public String getTel1() {
+		return tel1;
+	}
+	public void setTel1(String tel1) {
+		this.tel1 = tel1;
+	}
+	public String getTel2() {
+		return tel2;
+	}
+	public void setTel2(String tel2) {
+		this.tel2 = tel2;
+	}
+	public String getTel3() {
+		return tel3;
+	}
+	public void setTel3(String tel3) {
+		this.tel3 = tel3;
 	}
 	public String getEmail() {
 		return email;
@@ -67,10 +99,25 @@ public class RegisterDTO {
 		this.addrdetail = addrdetail;
 	}
 	public String getHobby() {
+		String hobbyStr = Arrays.toString(hobbyArr);
+		hobbyStr = hobbyStr.substring(1,hobbyStr.length()-1);
+		hobbyStr = hobbyStr.replaceAll(", ", "/");
+		hobby = hobbyStr;
+		/*for(int i=0; i<hobbyArr.length-1; i++) {
+			hobby+=hobbyArr[i]+"/";
+		}
+		hobby+=hobbyArr[hobbyArr.length-1];*/
 		return hobby;
 	}
 	public void setHobby(String hobby) {
 		this.hobby = hobby;
+		hobbyArr = hobby.split("/"); //취미를 문자열에서 배열로 변환
+	}
+	public String[] getHobbyArr() {
+		return hobbyArr;
+	}
+	public void setHobbyArr(String[] hobbyArr) {
+		this.hobbyArr = hobbyArr;
 	}
 	public String getWritedate() {
 		return writedate;

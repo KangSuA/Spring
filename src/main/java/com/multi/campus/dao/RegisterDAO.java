@@ -12,4 +12,10 @@ public interface RegisterDAO {
 	public int idCheckCount(String userid);
 	//도로명 검색
 	public List<ZipcodeDTO> zipSearch(String doroname);
+	//회원가입
+	public int registerInsert(RegisterDTO dto);
+	//회원정보 수정 폼
+	public RegisterDTO registerEdit(String userid);
+	//회원정보 수정 DB update
+	public int registerEditOk(RegisterDTO dto);
 }
