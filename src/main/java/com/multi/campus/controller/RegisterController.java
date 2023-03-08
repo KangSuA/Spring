@@ -131,8 +131,40 @@ public class RegisterController {
 		}
 		return mav;
 	}
-	/*@PostMapping("/idSearch")
-	public ModelAndView idSearch() {
-		
-	}*/
+	@GetMapping("/idSearch")
+	public String idSearch() {
+		return "register/idSearch";
+	}
+	@PostMapping("/idSearchOk")
+	public ModelAndView idSearchOk(String username, String tel1, String tel2, String tel3) {
+		ModelAndView mav = new ModelAndView();
+		String tel = tel1+"-"+tel2+"-"+tel3;
+		String res = service.idSearchOk(username, tel);
+		System.out.println(res+"\n"+username+", "+tel);
+		if(res!=null) {
+			mav.addObject("msg","아이디는 "+res+"입니다.");
+		}else {
+			mav.addObject("msg","아이디를 찾을 수 없습니다.");		
+		}
+		mav.setViewName("register/joinOkResult");
+		return mav;
+	}
+	@GetMapping("/pwdSearch")
+	public String pwdSearch() {
+		return "register/pwdSearch";
+	}
+	@PostMapping("/pwdSearchOk")
+	public ModelAndView pwdSearchOk(String userid, String username, String tel1, String tel2, String tel3) {
+		ModelAndView mav = new ModelAndView();
+		String tel = tel1+"-"+tel2+"-"+tel3;
+		String res = service.pwdSearchOk(userid, username, tel);
+		//System.out.println(res+"\n"+username+", "+tel);
+		if(res!=null) {
+			mav.addObject("msg","비밀번호는 "+res+"입니다.");
+		}else {
+			mav.addObject("msg","비밀번호를 찾을 수 없습니다.");		
+		}
+		mav.setViewName("register/joinOkResult");
+		return mav;
+	}
 }

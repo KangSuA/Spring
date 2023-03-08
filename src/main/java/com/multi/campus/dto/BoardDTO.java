@@ -3,14 +3,15 @@ package com.multi.campus.dto;
 public class BoardDTO {
 	private int no;
 	private String subject;
-	private String context;
+	private String content;
 	private String userid;
+	private String username;
 	private int hit;
 	private String writedate;
 	private String ip;
 	@Override
 	public String toString() {
-		return "BoardDTO [no=" + no + ", subject=" + subject + ", context=" + context + ", userid=" + userid + ", hit="
+		return "BoardDTO [no=" + no + ", subject=" + subject + ", content=" + content + ", userid=" + userid + ", hit="
 				+ hit + ", writedate=" + writedate + ", ip=" + ip + "]";
 	}
 	public int getNo() {
@@ -25,17 +26,23 @@ public class BoardDTO {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	public String getContext() {
-		return context;
+	public String getContent() {
+		return content;
 	}
-	public void setContext(String context) {
-		this.context = context;
+	public void setContent(String content) {
+		this.content = content;
 	}
 	public String getUserid() {
 		return userid;
 	}
 	public void setUserid(String userid) {
 		this.userid = userid;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public int getHit() {
 		return hit;

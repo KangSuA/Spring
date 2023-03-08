@@ -27,6 +27,13 @@
 	<update id="registerEditOk">
 		update register set tel=#{tel}, email=#{email}, zipcode=#{zipcode}, addr=#{addr}, addrdetail=#{addrdetail}, 
 		hobby=#{hobby} where userid=#{userid} and userpwd=#{userpwd}
-		
 	</update>
+	<select id="idSearchOk" resultType="string">
+		select userid from register
+		where username=#{param1} and tel=#{param2}
+	</select>
+	<select id="pwdSearchOk" resultType="string">
+		select userpwd from register
+		where userid=#{param1} and username=#{param2} and tel=#{param3}
+	</select>
 </mapper>
