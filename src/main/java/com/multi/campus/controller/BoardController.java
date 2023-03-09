@@ -3,6 +3,7 @@ package com.multi.campus.controller;
 import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,11 +34,11 @@ public class BoardController {
 		
 		ModelAndView mav = new ModelAndView();
 		//총레코드수 구하기
-		vo.setTotalRecord(service.totalRecord());
+		vo.setTotalRecord(service.totalRecord(vo));
+		//System.out.println(vo.toString());
 		
 		//DB조회
 		//해당페이지 레코드 선택하기
-
 		mav.addObject("list",service.pageSelect(vo));
 		mav.addObject("vo",vo); //뷰페이지로 페이지정보 셋팅
 		mav.setViewName("/board/boardList");
@@ -73,5 +74,82 @@ public class BoardController {
 		headers.add("Content-Type", "text/html; charset=UTF-8");
 		
 		return new ResponseEntity<String>(htmlTag,headers,HttpStatus.OK);
+	}
+	//글 내용 보기
+	@GetMapping("/boardView")
+	public ModelAndView boardView(int no, PagingVO vo) {
+		ModelAndView mav = new ModelAndView();
+		
+		BoardDTO dto = service.boardSelect(no);
+		mav.addObject("dto",dto);
+		mav.addObject("vo",vo);
+		service.boardHitCount(no);
+		mav.setViewName("/board/boardView");
+		
+		return mav;
+	}
+	//수정폼
+	@GetMapping("/boardEdit")
+	public ModelAndView boardEdit(int no, PagingVO vo) {
+		BoardDTO dto = service.boardEditSelect(no);
+		ModelAndView mav = new ModelAndView();
+		
+		String subject = dto.getSubject().replaceAll("\"", "&quot;"); // " -> \"
+		subject.replaceAll("\'", "&#39;");
+		dto.setSubject(subject);
+		
+		mav.addObject("dto",dto);
+		mav.addObject("vo",vo);
+		
+		mav.setViewName("/board/boardEdit");
+		return mav;
+	}
+	//수정(DB update)
+	@PostMapping("/boardEditOk")
+	public ResponseEntity<String> boardEditOk(BoardDTO dto, PagingVO vo, HttpSession session) {
+		//no레코드 번호, 로그인한 아이디가 같은 때 업데이트
+		dto.setUserid((String)session.getAttribute("logId"));
+		
+		String bodyTag = "<script>";
+		try {
+			service.boardUpdate(dto);
+			bodyTag += "location.href='boardView?no="+dto.getNo()+"&nowPage="+vo.getNowPage();
+			if(vo.getSearchWord()!=null) { //검색어가 있을 때
+				bodyTag += "&searchKey="+vo.getSearchKey()+"&searchWord="+vo.getSearchWord();
+			}
+			bodyTag += "';";
+		}catch(Exception e) {
+			e.printStackTrace();
+			bodyTag += "alert('게시판 글수정 실패하였습니다.');";
+			bodyTag += "history.back();";
+		}
+		bodyTag += "</script>";
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(new MediaType("text","html", Charset.forName("UTF-8")));
+		headers.add("Content-Type", "text/html; charset=UTF-8");
+		
+		ResponseEntity<String> entity = new ResponseEntity<String>(bodyTag, headers, HttpStatus.OK);
+		
+		return entity;
+	}
+	//글삭제
+	@GetMapping("/boardDel")
+	public ModelAndView boardDel(BoardDTO dto, PagingVO vo, HttpSession session) {
+		dto.setUserid((String)session.getAttribute("logId"));
+		int result = service.boardDelete(dto);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("nowPage",vo.getNowPage());
+		if(vo.getSearchWord()!=null) {
+			mav.addObject("searchKey",vo.getSearchKey());
+			mav.addObject("searchWord",vo.getSearchWord());
+		}
+		if(result>0) {
+			mav.setViewName("redirect:boardList");
+		}else {
+			mav.addObject("no",dto.getNo());
+			mav.setViewName("redirect:boardView");
+		}
+		return mav;
 	}
 }

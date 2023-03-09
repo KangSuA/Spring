@@ -33,8 +33,8 @@
 		float:left;
 		padding:10px 20px;
 	}
-	.pagingDiv a:link, .pagingDiv a:hover, .pagingDiv a:visited{
-		color:#60f;
+	.pagingDiv a:link, .pagingDiv a:hover, .pagingDiv a:visited, .board_list a:link, .board_list a:hover, .board_list a:visited{
+		color:#000;
 	}
 	.searchDiv{
 		clear:left;
@@ -42,6 +42,17 @@
 		text-align:center;
 	}
 </style>
+<script>
+	$(function(){
+		$("#searchForm").submit(function(){
+			if($("#searchWord").val()==""){
+				alert("검색어를 입력하세요");
+				return false;
+			}
+			return true;
+		});
+	});
+</script>
 <div class="container">
 	<h1>게시판 목록</h1>
 	<div class="board_header"><a href="/campus/board/boardWrite">글쓰기</a></div>
@@ -57,7 +68,8 @@
 		<li>등록일</li>
 		<c:forEach var="bDTO" items="${list}">
 			<li>${bDTO.no}</li>
-			<li>${bDTO.subject}</li>
+			<!-- 글내용 보기 -->
+			<li><a href="boardView?no=${bDTO.no}&nowPage=${vo.nowPage}<c:if test="${vo.searchWord!=null}">&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">${bDTO.subject}</a></li>
 			<li>${bDTO.username }</li>
 			<li>${bDTO.hit}</li>
 			<li>${bDTO.writedate}</li>
@@ -66,19 +78,30 @@
 	<!-- 페이징 -->
 	<div class="pagingDiv">
 		<ul>
+			<!-- 이전페이지 -->
 			<c:if test="${vo.nowPage==1}"> <!-- 현재 페이지가 첫번째 페이지 일때 -->
 				<li>prev</li>
 			</c:if>
 			<c:if test="${vo.nowPage>1}"> <!-- 현재 페이지가 첫번째 페이지가 아닐때 -->
-				<li><a href="boardList?nowPage=${vo.nowPage-1}">prev</a></li>
+				<li><a href="boardList?nowPage=${vo.nowPage-1}<c:if test='${vo.searchWord!=null}'>&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">prev</a></li>
 			</c:if>
-			<li>1</li>
-			<li>2</li>
-			<li>3</li>
-			<li>4</li>
-			<li>5</li>
+			
+			<!-- 페이지 번호 -->
+			<c:forEach var="p" begin="${vo.startPageNum}" end="${vo.startPageNum+vo.onePageNumCount-1}">
+				<c:if test="${p<=vo.totalPage}"> <!-- 표시할 페이지번호 -->
+					<c:if test="${p==vo.nowPage}">
+						<li style="background:#ddd;">
+					</c:if>
+					<c:if test="${p!=vo.nowPage}">
+						<li>
+					</c:if>
+						<a href="boardList?nowPage=${p}<c:if test='${vo.searchWord!=null}'>&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">${p}</a></li>
+				</c:if>
+			</c:forEach>
+			
+			<!-- 다음페이지 -->
 			<c:if test="${vo.nowPage<vo.totalPage}"> <!--  다음페이지가 있을때 -->
-				<li><a href="boardList?nowPage=${vo.nowPage+1}">next</a></li>
+				<li><a href="boardList?nowPage=${vo.nowPage+1}<c:if test='${vo.searchWord!=null}'>&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">next</a></li>
 			</c:if>
 			<c:if test="${vo.nowPage==vo.totalPage}"> <!-- 현재페이지가 마지막일 때 -->
 				<li>next</li>
@@ -87,13 +110,13 @@
 	</div>
 	
 	<div class="searchDiv">
-		<form method="get" id="searchForm">
-			<select name="">
-				<option value="제목">제목</option>
-				<option value="작성자">작성자</option>
-				<option value="글내용">글내용</option>
+		<form method="get" id="searchForm" action="boardList">
+			<select name="searchKey">
+				<option value="subject">제목</option>
+				<option value="username">작성자</option>
+				<option value="content">글내용</option>
 			</select>
-			<input type="text" name="" value=""/>
+			<input type="text" name="searchWord" id="searchWord"/>
 			<input type="submit" value="Search"/>
 		</form>
 	</div>
