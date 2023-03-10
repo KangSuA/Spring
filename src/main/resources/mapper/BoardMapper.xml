@@ -53,6 +53,6 @@
 		update board set hit=hit+1 where no=${param1}
 	</update>
 	<delete id="boardDelete">
-		delete from board where no=${no} and userid=${userid}
+		delete from board where no=${no} and userid=#{userid}
 	</delete>
 </mapper>
