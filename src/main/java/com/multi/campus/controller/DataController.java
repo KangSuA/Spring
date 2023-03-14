@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -156,6 +157,148 @@ public class DataController {
 		mav.addObject("fileList",fileList);
 		
 		mav.setViewName("data/dataView");		
+		return mav;
+	}
+	
+	//자료실 글수정 폼
+	@GetMapping("/data/dataEdit/{num}")
+	public ModelAndView dataEdit(@PathVariable("num") int no, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		//기존 글 가져오기
+		DataDTO dto = service.dataEditSelect(no, (String)session.getAttribute("logId"));
+		if(dto==null) {//글을 선택 못하면 글내용보기 이동
+			mav.setViewName("redirect:dataView/"+no);
+		}else {
+			//첨부파일
+			List<DataFileDTO> fileList = service.dataFileSelect(no);
+			
+			mav.addObject("dto",dto);
+			mav.addObject("fileList",fileList);
+			mav.addObject("fileCount",fileList.size());
+			
+			mav.setViewName("data/dataEdit");
+		}
+		return mav;
+	}
+	//자료실 글수정(DB업데이트, 원글, 첨부파일)
+	@PostMapping("/data/dataEditOk") //글번호, 제목, 내용, 삭제파일명
+	public ModelAndView dataEditOk(DataDTO dto, HttpSession session, HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		String path = session.getServletContext().getRealPath("/uploadfile");
+		
+		dto.setUserid((String)session.getAttribute("logId"));//로그인 아이디
+		//DB파일과 삭제파일 정리
+		List<String> finalFileList = service.dataFilenameList(dto.getNo());
+		//파일업로드
+		MultipartHttpServletRequest mr = (MultipartHttpServletRequest)request;
+		
+		List<MultipartFile> mfList = mr.getFiles("filename");
+		
+		//새로업로드된 파일명을 보관할 컬렉션
+		List<String> newFileList = new ArrayList<String>();
+		
+		//=========================================================
+		if(mfList!=null) {//업로드파일이 있을때
+			//새로 업로드한 MultipartFile갯수만큼
+			for(MultipartFile mf : mfList) {
+				
+				String filename = mf.getOriginalFilename(); //업로드한 원래파일명
+				if(filename!=null && !filename.equals("")) {
+					File f = new File(path,filename);
+					if(f.exists()) {//파일이 있으면
+						for(int filenum=1; ; filenum++) {
+							int p = filename.lastIndexOf("."); //.위치
+							String filenameNoExt = filename.substring(0,p); //파일명
+							String ext = filename.substring(p+1);//확장자
+							
+							String newFile = filenameNoExt +"(" +filenum+")."+ext ;
+							f = new File(path, newFile);
+							if(!f.exists()) {
+								filename = newFile;
+								break;
+							}
+							
+						} //for
+						
+					}
+					try {
+						mf.transferTo(new File(path,filename));
+					}catch(Exception e) {}
+					
+					//새로업로드한 파일명을 보관
+					newFileList.add(filename);
+				}
+			}// for
+		}
+		//==========================================================		
+		//삭제된 파일명 -> dto.getDelfile() -> List
+		//DB에서 가져온 파일 -> finalFileList-> List
+		//새로업로드된 파일 -> newFileList -> List
+		try {
+			//정상구현
+			//1. 원글 업데이트
+			int result = service.dataEditUpdate(dto);
+			//2. DB파일-삭제+새로업데이트
+			if(dto.getDelfile()!=null) {
+				for(int i=0; i<dto.getDelfile().size(); i++) {
+					finalFileList.remove(dto.getDelfile().get(i));
+				}
+			}
+			finalFileList.addAll(newFileList);
+			System.out.println("finalFileList->"+finalFileList.toString());
+			service.dataFileDelete(dto.getNo());
+			
+			List<DataFileDTO> fileDTOList = new ArrayList<DataFileDTO>();
+			for(String fname: finalFileList) {
+				DataFileDTO fDTO = new DataFileDTO();
+				fDTO.setNo(dto.getNo());
+				fDTO.setFilename(fname);
+				fileDTOList.add(fDTO);
+			}
+			int fResult = service.dataFileInsert(fileDTOList);
+			//3. 업로드 폴더에서 파일 삭제
+			if(dto.getDelfile()!=null) { //삭제된 파일이 있으면
+				for(int i=0; i<dto.getDelfile().size(); i++) {
+					fileDelete(path,dto.getDelfile().get(i));
+				}
+			}
+			//4. 글내용보기 이동
+			mav.setViewName("redirect:dataView/"+dto.getNo());
+		}catch(Exception e) {
+			//실패시
+			//1. 새로업로드된 파일 삭제
+			for(int i=0; i<newFileList.size(); i++) {
+				fileDelete(path,newFileList.get(i));
+			}
+			//2. 수정페이지로 다시 보내기
+			mav.addObject("msg","자료실 글수정을 실패하였습니다.");
+			mav.setViewName("data/dataResult");
+		}
+		return mav;
+	}
+	
+	//자료실 삭제
+	@GetMapping("/data/dataDelete/{no}")
+	public ModelAndView dataDelete(@PathVariable("no") int no, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		String path = session.getServletContext().getRealPath("/uploadfile");
+		//1.DB에 있는 파일 목록 가져오기
+		List<String> filenameList = service.dataFilenameList(no);
+		//2.파일명이 있는 레코드 삭제
+		int fileResult = service.dataFileDelete(no);
+		//3.원글삭제
+		int res = service.dataEditDelete(no,(String)session.getAttribute("logId"));
+		
+		if(res>0) {
+			//파일삭제
+			for(String fname : filenameList) {
+				fileDelete(path,fname);
+			}
+			mav.setViewName("redirect:/data/dataList");
+		}else {
+			mav.setViewName("redirect:dataView/"+no);
+		}	
 		return mav;
 	}
 	
