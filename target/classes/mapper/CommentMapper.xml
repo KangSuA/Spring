@@ -7,4 +7,15 @@
 		insert into comment_board(c_no,no,coment,userid,ip) 
 		values(comment_sq.nextval,#{no},#{coment},#{userid},#{ip})
 	</insert>
+	<select id="commentListSelect" resultType="com.multi.campus.dto.CommentDTO">
+		select c_no, no, coment, userid, writedate 
+		from comment_board where no=${param1} order by c_no desc
+	</select>
+	<update id="commentUpdate" parameterType="com.multi.campus.dto.CommentDTO">
+		update comment_board set coment=#{coment} 
+		where c_no = ${c_no} and userid=#{userid}
+	</update>
+	<delete id="commentDelete">
+		delete from comment_board where c_no=${param1} and userid=#{param2}
+	</delete>
 </mapper>

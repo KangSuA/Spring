@@ -20,7 +20,51 @@
 			location.href="boardDel?no=${dto.no}&nowPage=${vo.nowPage}<c:if test="${vo.searchWord!=null}">&searchKey=${vo.searchKey }&searchWord=${vo.searchWord }</c:if>";
 		}
 	}
-	$(function(){ //댓글쓰기
+	$(function(){ 
+		//댓글목록=============================
+		//ajax로 해당 게시물에 대한 무든 댓글을 선택하여 뷰에 표시하는 함수
+		function commentList(){
+			$.ajax({
+				url:"/campus/commentList",
+				data:{
+					no:${dto.no}
+				},
+				type:'GET',
+				success:function(comment){
+					//원래있는 댓글을 지운다.
+					//$("#commentList").html("");
+					
+					var tag = "";
+					$(comment).each(function(i,cDTO){
+						tag += "<li><div><b>"+cDTO.userid+"("+cDTO.writedate+")</b>";
+						
+						//본인이 쓴 댓글일때 수정/삭제
+						if(cDTO.userid == '${logId}'){
+							tag += "<input type='button' value='Edit'/>";
+							tag += "<input type='button' value='Del' title='"+cDTO.c_no+"'/>";
+							tag += "<p>"+cDTO.coment+"</p></div>";
+							
+							//댓글 수정 폼 만들기
+							tag += "<div style='display:none'>";
+							tag += "<form method='post'>";
+							tag += "<input type='hidden' name='c_no' value='"+cDTO.c_no+"'/>";
+							tag += "<textarea name='coment' style='width:400px;height:80px;'>"+cDTO.coment+"</textarea>";
+							tag += "<input type='submit' value='댓글수정하기'/>";
+							tag += "</form>";
+							tag += "</div>";
+						}else{
+							tag += "<p>"+cDTO.coment+"</p></div>";
+						}
+						
+						tag += "</li>";
+					});
+					$("#commentList").html(tag);
+				},error : function(e){
+					console.log(e.responseText)
+				}
+			});
+		}
+		//댓글쓰기=============================
 		$("#commentForm").submit(function(){
 			//코멘트가 있을때 ajax실행
 			if($("#coment").val()==""){
@@ -39,14 +83,66 @@
 				success:function(result){
 					console.log(result);
 					//기존에 입력한 댓글 지우기
-					$("#coment").val("");
+					$("#comment").val("");
 					//댓글목록을 다시 뿌려준다.
+					commentList();
 				},error:function(e){
 					console.log(e.responseText);
 				}
 			});
 			return false; //form의 기본이벤트때문 다음실행이 있고 그것을 중단한다.
 		});
+		//댓글 수정폼 보여주기
+		$(document).on('click','#commentList input[value=Edit]',function(){
+			//기존에 열어놓은 폼이나, 숨겨놓은 댓글내용을 처리하고
+			//$("#commentList>li>div:nth-first").css('display','block');
+			//$("#commentList>li>div:nth-last").css('display','none');
+			$(this).parent().css("display","none"); // 댓글은 숨기고
+			$(this).parent().next().css("display","block"); //수정폼 보여주기
+		});
+		//댓글 수정 - db
+		$(document).on('click','#commentList input[value=댓글수정하기]',function(){
+			//데이터 준비
+			var params = $(this).parent().serialize(); // c_no=34&coment=test
+			var url = "/campus/commentEdit";
+			
+			$.ajax({
+				url:url,
+				data:params,
+				type:"POST",
+				success:function(result){
+					console.log(result);
+					//댓글 목록 다시 뿌리기
+					commentList();
+				},error:function(e){
+					console.log(e.responseText);
+				}
+			});
+			
+			return false;
+		});
+		//댓글 삭제
+		$(document).on('click',"#commentList input[value=Del]",function(){
+			
+			if(confirm("댓글을 삭제할까요?")){
+				var params = "c_no="+$(this).attr("title");
+				console.log(params);
+				$.ajax({
+					url:"/campus/commentDelete",
+					data:params,
+					success:function(result){
+						console.log(result);
+						commentList();
+					},error:function(e){
+						console.log(e.responseText);
+					}
+				});
+			}
+			
+		});
+		
+		//댓글목록 뿌려주기 -- 처음
+		commentList();
 	})
 </script>
 <div class="container">
@@ -84,12 +180,7 @@
 			</form>
 		</c:if>
 		<ul id="commentList">
-			<li>
-				<b>작성자 (2023-03-16 00:00:00)</b> 수정,삭제
-				<p>코멘트<br/>
-					여러줄
-				</p>
-			</li>
+			
 		</ul>
 	</div>
 </div>
