@@ -22,4 +22,6 @@ public interface BoardDAO {
 	public void boardHitCount(int no);
 	//삭제
 	public int boardDelete(BoardDTO dto);
+	//여러글 한번에 삭제
+	public int boardMultiLineDelete(List<Integer> noList);
 }

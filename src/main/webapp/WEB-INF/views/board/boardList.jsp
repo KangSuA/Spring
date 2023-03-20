@@ -22,8 +22,8 @@
 		line-height:40px;
 		border-bottom:1px solid #ddd;
 	}
-	.board_list li:nth-child(5n+2){
-		width:60%;
+	.board_list li:nth-child(6n+3){
+		width:50%;
 		/*말줄임표시하기*/
 		white-space:nowrap;/*줄바꾸지 않는다.*/
 		overflow:hidden;/*넘치는 문자 숨기기*/
@@ -51,6 +51,31 @@
 			}
 			return true;
 		});
+		
+		//---- 전체선택을 클릭하면 체크박스의 상태에 따라 선택 또는 해제 하는 기능 구현
+		$("#allCheck").click(function(){
+			$(".board_list input[name=noList]").prop("checked",$("#allCheck").prop("checked"))
+		});
+		
+		//선택삭제 버튼을 클릭하면
+		$("#chooseDel").click(function(){
+			// 1개이상 삭제를 선택했을 때
+			var checkCount = 0;
+			$(".board_list input[name=noList]").each(function(idx, obj){
+				if(obj.checked){ //$(obj.prop('checked'))
+					checkCount++;
+				}
+			});
+			
+			if(checkCount>0){
+				if(confirm(checkCount+'개의 글을 삭제하시겠습니까?')){
+					$("#delList").submit();
+				}
+			}else{
+				alert("1개 이상의 글을 선택 후 삭제하세요");
+			}
+			
+		});
 	});
 </script>
 <div class="container">
@@ -60,21 +85,42 @@
 		<div>총레코드 수 : ${vo.totalRecord}</div>
 		<div>${vo.nowPage}/${vo.totalPage}</div>
 	</div>
-	<ul class="board_list">
-		<li>번호</li>
-		<li>제목</li>
-		<li>작성자</li>
-		<li>조회수</li>
-		<li>등록일</li>
-		<c:forEach var="bDTO" items="${list}">
-			<li>${bDTO.no}</li>
-			<!-- 글내용 보기 -->
-			<li><a href="boardView?no=${bDTO.no}&nowPage=${vo.nowPage}<c:if test="${vo.searchWord!=null}">&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">${bDTO.subject}</a></li>
-			<li>${bDTO.username }</li>
-			<li>${bDTO.hit}</li>
-			<li>${bDTO.writedate}</li>
-		</c:forEach>
-	</ul>
+	<form method="post" action="/campus/board/boardMultiDel" id="delList">
+		<!--  페이지번호, 검색키, 검색어 -->
+		<input type="hidden" name="nowPage" value="${vo.nowPage}"/>
+		<c:if test="${vo.searchWord!=' ' }">
+			<input type="hidden" name="searchKey" value="${vo.searchKey }"/>
+			<input type="hidden" name="searchWord" value="${vo.searchWord }"/>
+		</c:if>
+		
+		<ul class="board_list">
+			<li><input type="checkbox" id="allCheck">전체선택</li>
+			<li>번호</li>
+			<li>제목</li>
+			<li>작성자</li>
+			<li>조회수</li>
+			<li>등록일</li>
+			<c:forEach var="bDTO" items="${list}">
+				<li>
+					<c:if test="${bDTO.userid==logId}">
+						<input type="checkbox" name="noList" value="${bDTO.no }"/>
+					</c:if>
+					<c:if test="${bDTO.userid!=logId}">
+						<input type="checkbox" disabled/>
+					</c:if>
+				</li>
+				<li>${bDTO.no}</li>
+				<!-- 글내용 보기 -->
+				<li><a href="boardView?no=${bDTO.no}&nowPage=${vo.nowPage}<c:if test="${vo.searchWord!=null}">&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">${bDTO.subject}</a></li>
+				<li>${bDTO.username }</li>
+				<li>${bDTO.hit}</li>
+				<li>${bDTO.writedate}</li>
+			</c:forEach>
+		</ul>
+	</form>
+	<div>
+		<input type="button" value="선택삭제" id="chooseDel"/>
+	</div>
 	<!-- 페이징 -->
 	<div class="pagingDiv">
 		<ul>

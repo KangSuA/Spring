@@ -3,7 +3,7 @@ package com.multi.campus.dto;
 public class PagingVO {
 	//페이징처리시 필요한 변수들
 	private int nowPage = 1; //현재페이지
-	private int onePageRecord = 5;//한페이지에 표시할 레코드 수
+	private int onePageRecord = 10;//한페이지에 표시할 레코드 수
 	private int totalRecord; //총레코드수
 	private int totalPage; //총페이지수
 	private int lastPageRecord=0; //마지막 페이지에 남아있는 레코드 수

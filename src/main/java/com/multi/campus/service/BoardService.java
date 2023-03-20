@@ -14,4 +14,5 @@ public interface BoardService {
 	public int boardUpdate(BoardDTO dto);
 	public void boardHitCount(int no);
 	public int boardDelete(BoardDTO dto);
+	public int boardMultiLineDelete(List<Integer> noList);
 }

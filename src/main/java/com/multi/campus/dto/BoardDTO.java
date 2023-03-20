@@ -1,5 +1,7 @@
 package com.multi.campus.dto;
 
+import java.util.List;
+
 public class BoardDTO {
 	private int no;
 	private String subject;
@@ -9,10 +11,15 @@ public class BoardDTO {
 	private int hit;
 	private String writedate;
 	private String ip;
+	
+	
+	private List<Integer> noList;
+	
 	@Override
 	public String toString() {
-		return "BoardDTO [no=" + no + ", subject=" + subject + ", content=" + content + ", userid=" + userid + ", hit="
-				+ hit + ", writedate=" + writedate + ", ip=" + ip + "]";
+		return "BoardDTO [no=" + no + ", subject=" + subject + ", content=" + content + ", userid=" + userid
+				+ ", username=" + username + ", hit=" + hit + ", writedate=" + writedate + ", ip=" + ip + ", noList="
+				+ noList + "]";
 	}
 	public int getNo() {
 		return no;
@@ -61,5 +68,11 @@ public class BoardDTO {
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+	public List<Integer> getNoList() {
+		return noList;
+	}
+	public void setNoList(List<Integer> noList) {
+		this.noList = noList;
 	}
 }

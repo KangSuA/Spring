@@ -152,4 +152,17 @@ public class BoardController {
 		}
 		return mav;
 	}
+	//여러개의 글 삭제
+	@PostMapping("/boardMultiDel")
+	public ModelAndView boardMultiDel(BoardDTO dto, PagingVO vo) {
+		ModelAndView mav = new ModelAndView();
+		int res = service.boardMultiLineDelete(dto.getNoList());
+		mav.addObject("nowPage", vo.getNowPage());
+		if(vo.getSearchWord()!=null && !vo.getSearchWord().equals("")) {
+			mav.addObject("searchKey",vo.getSearchKey());
+			mav.addObject("searchWord",vo.getSearchWord());
+		}
+		mav.setViewName("redirect:boardList");
+		return mav;
+	}
 }

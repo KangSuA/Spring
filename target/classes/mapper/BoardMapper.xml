@@ -16,7 +16,7 @@
 	<select id="pageSelect" resultType="com.multi.campus.dto.BoardDTO">
 		select * from
 		    (select * from
-		        (select b.no, b.subject, r.username, b.hit, to_char(b.writedate,'MM-DD HH:MI') writedate 
+		        (select b.no, b.subject, b.userid,r.username, b.hit, to_char(b.writedate,'MM-DD HH:MI') writedate 
 		        	from board b join register r on b.userid=r.userid 
 		        	<if test="searchWord!=null">
 		        		and ${searchKey} like '%${searchWord}%' 
@@ -54,5 +54,11 @@
 	</update>
 	<delete id="boardDelete">
 		delete from board where no=${no} and userid=#{userid}
+	</delete>
+	<delete id="boardMultiLineDelete">
+		delete from board where 
+		<foreach item="item" collection="list" open="no in (" separator=", " close=")">
+			#{item}
+		</foreach>
 	</delete>
 </mapper>
