@@ -27,4 +27,29 @@ public class AnswerServiceImpl implements AnswerService {
 	public int answerInsert(AnswerDTO dto) {
 		return dao.answerInsert(dto);
 	}
+
+	@Override
+	public int hitCount(int no) {
+		return dao.hitCount(no);
+	}
+
+	@Override
+	public AnswerDTO answerSelect(int no) {
+		return dao.answerSelect(no);
+	}
+	
+	@Override
+	public AnswerDTO replyDataSelect(int no) {
+		return dao.replyDataSelect(no);
+	}
+
+	@Override
+	public int stepUp(AnswerDTO orgDataDto) {
+		return dao.stepUp(orgDataDto);
+	}
+
+	@Override
+	public int replyWrite(AnswerDTO dto) {
+		return dao.replyWrite(dto);
+	}
 }

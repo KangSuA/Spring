@@ -69,7 +69,16 @@
 			<li>등록일</li>
 			<c:forEach var="aDTO" items="${list}">
 				<li>${aDTO.no}</li>
-				<li><a href="answerView?=no=${aDTO.no}">${aDTO.subject}</a></li>
+				<li>
+					<!-- 공백이 있을 때 lvl: 0,1,.... -->
+					<c:if test="${aDTO.lvl>0 }">
+						<c:forEach var="i" begin="${1}" end="${aDTO.lvl}">
+							&nbsp;&nbsp;&nbsp;&nbsp;
+						</c:forEach>
+						↳
+					</c:if>
+					<a href="answerView?no=${aDTO.no}">${aDTO.subject}</a>
+				</li>
 				<li>${aDTO.userid }</li>
 				<li>${aDTO.hit}</li>
 				<li>${aDTO.writedate}</li>
