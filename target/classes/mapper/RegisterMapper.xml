@@ -36,4 +36,7 @@
 		select userpwd from register
 		where userid=#{param1} and username=#{param2} and tel=#{param3}
 	</select>
+	<select id="idSearch">
+		select rapd(substr(usdrid,1,length(userid)/2),length(userid),'*') userid from register where username=#{param1} and email=#{param2}
+	</select>
 </mapper>

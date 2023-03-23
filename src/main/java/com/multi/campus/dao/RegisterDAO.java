@@ -22,4 +22,6 @@ public interface RegisterDAO {
 	public String idSearchOk(String username, String tel);
 	//비밀번호 찾기
 	public String pwdSearchOk(String userid, String username, String tel);
+	//아이디 찾기 - 메일 보내기
+	public String idSearch(String username, String email);
 }

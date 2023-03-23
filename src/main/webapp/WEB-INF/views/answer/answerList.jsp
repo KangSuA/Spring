@@ -67,8 +67,9 @@
 			<li>작성자</li>
 			<li>조회수</li>
 			<li>등록일</li>
+			<c:set var="noNum" value="${totalRecord}"/>
 			<c:forEach var="aDTO" items="${list}">
-				<li>${aDTO.no}</li>
+				<li>${noNum}</li>
 				<li>
 					<!-- 공백이 있을 때 lvl: 0,1,.... -->
 					<c:if test="${aDTO.lvl>0 }">
@@ -82,6 +83,7 @@
 				<li>${aDTO.userid }</li>
 				<li>${aDTO.hit}</li>
 				<li>${aDTO.writedate}</li>
+				<c:set var="noNum" value="${noNum-1}"/>
 			</c:forEach>
 		</ul>
 </div>

@@ -29,16 +29,36 @@
 				alert("전화번호를 잘못입력하였습니다.");
 				return false;
 			}
+			
+			var url = 'idSearchEmailSend';
+			var params = $("#idSearchForm").serialize();
+			$.ajax({
+				url : url,
+				data ; params,
+				success:function(result){
+					if(result=='Y') {
+						alert("이메일로 아이디를 전송하였습니다.");	
+						location.href='/campus/loginForm';
+					} else{
+						alert("존재하지 않는 정보입니다.");
+					}
+				},error:function(e){
+					console.log(e.responseText);
+				}
+			});
+			
 		});
 	})
 </script>
 <div class="container">
 	<h1>아이디 찾기</h1>
 	<h3>회원정보에 등록한 것과 동일한 이름과 연락처를 입력해주세요.</h3>
-	<form method="post" id="idSearchForm" action="idSearchOk">
+	<form method="post" id="idSearchForm" ><!-- action="idSearchOk">-->
 		<ul>
 			<li>이름</li>
 			<li><input test="text" name="username" id="username"/></li>
+			<li>이베일</li>
+			<li><input type="text" name="email" id="email"/>
 			<li>연락처</li>
 			<li>
 				<select name="tel1" id="tel1">

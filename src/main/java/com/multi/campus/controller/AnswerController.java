@@ -3,6 +3,7 @@ package com.multi.campus.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -151,4 +152,78 @@ public class AnswerController {
 		return entity;
 	}
 	
+	//글 수정
+	@GetMapping("/answerEdit/{no}")
+	public ModelAndView answerEdit(@PathVariable("no") int no) {
+		ModelAndView mav = new ModelAndView();
+		
+		mav.addObject("dto",service.getAnswerSelect(no));
+		mav.setViewName("answer/answerEditForm");
+		return mav;
+	}
+	
+	//글수정 DB
+	@PostMapping("/answerEditOk")
+	public ResponseEntity<String> answerEditOk(AnswerDTO dto, HttpSession session) {
+		ResponseEntity<String> entity = null;
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type","text/html; charset=utf-8");
+		
+		dto.setUserid((String)session.getAttribute("logId"));
+		try {
+			int result = service.answerUpdate(dto);
+			
+			if(result>0) { //수정 됨
+				String body = "<script>";
+				body += "location.href='/campus/answer/answerView?no="+dto.getNo()+"';";
+				body += "</script>";
+				
+				entity = new ResponseEntity<String>(body, headers, HttpStatus.OK);
+			}else {
+				throw new Exception();
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			//수정 안됨
+			String body = "<script>";
+			body += "alert('글수정 실패하였습니다.');";
+			body += "history.back();";
+			body += "</script>";
+			
+			entity = new ResponseEntity<String>(body, headers, HttpStatus.BAD_REQUEST);
+		}
+		
+		return entity;
+	}
+	
+	//글 삭제
+	@GetMapping("/answerDelete")
+	public ModelAndView answerDelete(int no, HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		//lvl을 가져와 원글인지 답변글인지 구별처리한다.
+		int lvl = service.getLevel(no);
+		if(lvl==0) { //delete - 같은 ref를 가진 글을 삭제한다.
+			int result = service.answerDelete(no);
+			System.out.println("삭제된 레코드 수 : "+result);
+			if(result>0) { //삭제 됨
+				mav.setViewName("redirect:answerList");
+			}else { //삭제 안됨
+				mav.addObject("no",no);
+				mav.setViewName("redirect:answerView");
+			}
+		}else { //update
+			int result = service.answerDeleteUpdate(no);
+			System.out.println("수정된 레코드 수 : "+result);
+			if(result>0) {
+				mav.setViewName("redirect:answerList");
+			}else {
+				mav.addObject("no",no);
+				mav.setViewName("redirect:answerView");
+			}
+		}
+		
+		return mav;
+	}
 }

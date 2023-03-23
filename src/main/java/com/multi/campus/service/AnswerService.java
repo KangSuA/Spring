@@ -13,4 +13,9 @@ public interface AnswerService {
 	public AnswerDTO replyDataSelect(int no);
 	public int stepUp(AnswerDTO orgDataDto);
 	public int replyWrite(AnswerDTO dto);
+	public AnswerDTO getAnswerSelect(int no);
+	public int answerUpdate(AnswerDTO dto);
+	public int getLevel(int no);
+	public int answerDelete(int no);
+	public int answerDeleteUpdate(int no);
 }

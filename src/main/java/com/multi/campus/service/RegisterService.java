@@ -14,4 +14,5 @@ public interface RegisterService {
 	public int registerEditOk(RegisterDTO dto);
 	public String idSearchOk(String username, String tel);
 	public String pwdSearchOk(String userid, String username, String tel);
+	public String idSearch(String username, String email);
 }

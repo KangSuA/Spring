@@ -21,4 +21,14 @@ public interface AnswerDAO {
 	public int stepUp(AnswerDTO orgDataDto);
 	//답글등록
 	public int replyWrite(AnswerDTO dto);
+	//글 수정
+	public AnswerDTO getAnswerSelect(int no);
+	//글 수정 DB
+	public int answerUpdate(AnswerDTO dto);
+	//lvl 가져오기
+	public int getLevel(int no);
+	//글 삭제
+	public int answerDelete(int no);
+	//삭제 - update 답변글일때
+	public int answerDeleteUpdate(int no);
 }

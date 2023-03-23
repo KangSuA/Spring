@@ -100,6 +100,7 @@
 			<li>작성자</li>
 			<li>조회수</li>
 			<li>등록일</li>
+			<c:set var="recordNum" value="${vo.totalRecord - (vo.nowPage-1)*vo.onePageRecord}"/>
 			<c:forEach var="bDTO" items="${list}">
 				<li>
 					<c:if test="${bDTO.userid==logId}">
@@ -109,12 +110,13 @@
 						<input type="checkbox" disabled/>
 					</c:if>
 				</li>
-				<li>${bDTO.no}</li>
+				<li>${recordNum}</li>
 				<!-- 글내용 보기 -->
 				<li><a href="boardView?no=${bDTO.no}&nowPage=${vo.nowPage}<c:if test="${vo.searchWord!=null}">&searchKey=${vo.searchKey}&searchWord=${vo.searchWord}</c:if>">${bDTO.subject}</a></li>
 				<li>${bDTO.username }</li>
 				<li>${bDTO.hit}</li>
 				<li>${bDTO.writedate}</li>
+				<c:set var="recordNum" value="${recordNum-1}" />
 			</c:forEach>
 		</ul>
 	</form>

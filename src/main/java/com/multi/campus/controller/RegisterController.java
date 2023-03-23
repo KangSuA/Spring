@@ -2,16 +2,20 @@ package com.multi.campus.controller;
 
 import java.util.List;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.multi.campus.dto.RegisterDTO;
@@ -22,6 +26,10 @@ import com.multi.campus.service.RegisterService;
 public class RegisterController {
 	@Autowired
 	RegisterService service;
+	
+	@Autowired
+	JavaMailSenderImpl mailSender;
+	
 	//로그인폼
 	@GetMapping("/loginForm")
 	public String login() {
@@ -135,6 +143,41 @@ public class RegisterController {
 	public String idSearch() {
 		return "register/idSearch";
 	}
+	@PostMapping("idSearchEmailSend")
+	@ResponseBody
+	public String idSearchEmailSend(RegisterDTO dto) {
+		String userid = service.idSearch(dto.getUsername(), dto.getEmail());
+		if(userid==null || userid.equals("")) { //아이디가 없으면 존재하지 않는 정보
+			return "N";
+		}else {
+			//아이디가 있으면
+			//DB조회한 아이디를 이메일로 보내고 메일보냈따는 정보를 알려준다.
+			String emailSubject = "아이디 찾기 결과";
+			String emailContent = "<div style='background:pink; margin:50px; padding:50px; border:2px solid gray'>";
+			emailContent += "검색한 아이디입니다.";
+			emailContent += "아이디 : "+userid;
+			emailContent += "</div>";
+			try {
+				//mimeMessage -> mimeMessageHelper
+				MimeMessage message = mailSender.createMimeMessage();
+				MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
+				
+				//보내는 메일 주소
+				messageHelper.setFrom("samdo102@naver.com");
+				messageHelper.setTo("");
+				messageHelper.setSubject(emailSubject);
+				messageHelper.setText("text/html; charset=UTF-8",emailContent);
+				
+				mailSender.send(message);
+				return "Y";
+			}catch(Exception e) {
+				e.printStackTrace();
+				return "N";
+			}
+			
+		}
+	}
+	
 	@PostMapping("/idSearchOk")
 	public ModelAndView idSearchOk(String username, String tel1, String tel2, String tel3) {
 		ModelAndView mav = new ModelAndView();
